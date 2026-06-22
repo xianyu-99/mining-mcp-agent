@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  mining-agent:
+    build: .
+    container_name: mining-agent-client
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - .:/app
+    command: python src/agent/client.py "给我生成一份关于 Pilbara 锂矿的今日简报"

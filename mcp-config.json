@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "mining-news-mcp": {
+      "command": "python",
+      "args": [
+        "src/servers/mining_news/server.py"
+      ]
+    },
+    "mineral-pdf-mcp": {
+      "command": "python",
+      "args": [
+        "src/servers/mineral_pdf/server.py"
+      ]
+    },
+    "lme-price-mcp": {
+      "command": "python",
+      "args": [
+        "src/servers/lme_price/server.py"
+      ]
+    }
+  }
+}

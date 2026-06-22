@@ -1,0 +1,11 @@
+mcp
+fastmcp
+langchain
+langchain-openai
+langchain-anthropic
+langgraph
+duckduckgo-search
+pdfplumber
+requests
+beautifulsoup4
+yfinance
