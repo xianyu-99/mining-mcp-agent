@@ -2,10 +2,11 @@ import os
 import sys
 import logging
 from langchain_openai import ChatOpenAI
-from langchain.agents import initialize_agent, AgentType
-from langchain.tools import Tool
+from langchain_core.tools import Tool
+from langchain_core.messages import HumanMessage
+from langgraph.prebuilt import create_react_agent
 
-# 为保证能在 Docker 中单机快速拉起并演示，这里我们演示通过 Langchain 包装底层工具。
+# 为保证能在 Docker 中单机快速拉起并演示，这里我们演示通过 LangGraph 包装底层工具。
 # 在真正的微服务架构中，Client 会通过 stdio 或 SSE 接入 mcp-config.json 中的 server。
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from servers.mining_news.server import search, fetch_article
@@ -43,12 +44,11 @@ def run_agent(query: str):
         )
     ]
     
-    # 默认使用 OpenAI，如果环境变量中配置了 ANTHROPIC_API_KEY，也可以替换为 ChatAnthropic
+    # 默认使用 OpenAI
     llm = ChatOpenAI(temperature=0, model="gpt-4o-mini")
     
-    agent = initialize_agent(
-        tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
-    )
+    # 使用 LangGraph 构建 ReAct Agent
+    agent_executor = create_react_agent(llm, tools)
     
     prompt = f"""
     请作为矿业分析师，处理以下请求：
@@ -64,7 +64,8 @@ def run_agent(query: str):
     """
     
     try:
-        result = agent.run(prompt)
+        response = agent_executor.invoke({"messages": [HumanMessage(content=prompt)]})
+        result = response["messages"][-1].content
         print("\n" + "="*50)
         print("🎉 矿权日报生成成功：")
         print("="*50 + "\n")
@@ -77,9 +78,10 @@ def run_agent(query: str):
         logging.error(f"Agent 运行出错: {e}")
 
 if __name__ == "__main__":
-    # 如果没有提供 API Key，就 mock 运行
     if not os.environ.get("OPENAI_API_KEY"):
         print("⚠️ 未检测到 OPENAI_API_KEY，系统将进入 Mock 模式。在实际面试提交时，评委会在 .env 或 docker-compose 中注入 Key。")
-    
+        # 为防止在没有 key 的环境下直接抛出 pydantic Validation error，这里设置一个假的 key 仅用于通过验证
+        os.environ["OPENAI_API_KEY"] = "sk-mock-key-for-validation"
+        
     query = sys.argv[1] if len(sys.argv) > 1 else "给我生成一份关于 Pilbara 锂矿的今日简报"
     run_agent(query)
