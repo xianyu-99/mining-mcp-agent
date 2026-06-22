@@ -2,7 +2,6 @@ mcp
 fastmcp
 langchain
 langchain-openai
-langchain-anthropic
 langgraph
 duckduckgo-search
 pdfplumber
