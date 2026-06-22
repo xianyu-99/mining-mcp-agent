@@ -21,13 +21,17 @@
 ### 方式一：使用 Docker Compose (极简交付)
 
 ```bash
-# 1. 设置环境变量 (必需，Agent 默认需要大模型来进行推理)
+# 1. 设置环境变量 (如果未设置，系统将自动进入 Mock 降级模式验证 MCP 协议)
 export OPENAI_API_KEY="sk-your-key-here"
 
 # 2. 一键启动
 docker-compose up
 ```
 *(注：Windows 用户可在 PowerShell 中使用 `$env:OPENAI_API_KEY="sk-..."` 然后执行 docker-compose up)*
+
+**💡 亮点特性：Mock 降级验证模式**
+如果您在本地没有配置大模型的 API Key，系统并不会直接报错崩溃！它将优雅地进入 Mock 模式：
+自动通过 `stdio` 协议启动所有子进程 -> 成功拉取并验证 MCP 工具的 JSON Schema 映射 -> 打印验证成功日志后退出。这允许面试官在即使没有设置 Key 的环境下，也能验证底层 MCP 架构的完整连通性。
 
 系统会自动拉取依赖、运行 Agent，并在控制台直接打印出一份排版精美的 Markdown 矿权日报（包含新闻摘要、储量数据、价格走势和风险提示）。
 
