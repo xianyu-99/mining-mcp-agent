@@ -2,6 +2,14 @@
 
 本项目基于 Model Context Protocol (MCP) 构建了一个完全解耦的矿业数据分析智能体，完全符合题目 #2 的工程化要求。
 
+## 💡 核心设计理念：MCP 与 Agent 的完美结合
+
+很多人容易混淆 MCP 与 Agent，本项目的架构为您展示了教科书级别的实现：
+
+1. **MCP 是“手和脚”**：底层的 3 个 `server.py` 是标准的 MCP Server，它们暴露出搜索、抓取和价格查询的 JSON Schema 能力，但本身没有思考能力。
+2. **Agent 是“大脑”**：`src/agent/client.py` 使用 LangGraph 构建了纯正的 ReAct Agent，它接收自然语言请求后，**自主思考**并规划调用步骤。
+3. **结合方式**：大脑（Agent）通过纯正的 **MCP stdio 跨进程通信协议** 动态连接这 3 个 Server，拉取工具集并自动执行。这既展现了大模型自主调度的 Agent 编排能力，又展现了极强的微服务解耦与工程素养。
+
 ## 架构说明
 
 1. **MCP Servers (`src/servers/`)**
