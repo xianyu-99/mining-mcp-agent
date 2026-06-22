@@ -29,13 +29,16 @@
 ### 方式一：使用 Docker Compose (极简交付)
 
 ```bash
-# 1. 设置环境变量 (如果未设置，系统将自动进入 Mock 降级模式验证 MCP 协议)
+# 1. 设置大模型 API Key (用于驱动 Agent 大脑)
+# 方式 A: Linux/Mac 终端导出
 export OPENAI_API_KEY="sk-your-key-here"
+# 方式 B: Windows PowerShell 导出
+$env:OPENAI_API_KEY="sk-your-key-here"
+# 方式 C: 在当前目录下创建一个 `.env` 文件，写入 `OPENAI_API_KEY=sk-...` (推荐)
 
 # 2. 一键启动
 docker-compose up
 ```
-*(注：Windows 用户可在 PowerShell 中使用 `$env:OPENAI_API_KEY="sk-..."` 然后执行 docker-compose up)*
 
 **💡 亮点特性：Mock 降级验证模式**
 如果您在本地没有配置大模型的 API Key，系统并不会直接报错崩溃！它将优雅地进入 Mock 模式：
@@ -51,9 +54,11 @@ export OPENAI_API_KEY="sk-your-key-here"
 python src/agent/client.py "给我生成一份关于 Pilbara 锂矿的今日简报"
 ```
 
-### 方式三：直接接入 Claude Desktop 测试
+### 方式三：直接接入 Claude Desktop 测试 (无需配置 API Key)
 
-本项目完美兼容 Claude Desktop！只需将本目录下的 `mcp-config.json` 里的内容，合并到您的 Claude 配置文件（如 `C:\Users\用户名\AppData\Roaming\Claude\claude_desktop_config.json`）中。
+本项目完美兼容 Claude Desktop！由于在这种模式下，**充当“大脑”的是 Claude 客户端自身**，因此您不需要为本项目配置任何 API Key，3个底层的数据抽取工具完全免费运行。
+
+只需将本目录下的 `mcp-config.json` 里的内容，合并到您的 Claude 配置文件（如 `C:\Users\用户名\AppData\Roaming\Claude\claude_desktop_config.json`）中。
 *注意：在 Claude 配置文件中，请将 `args` 里的 `src/servers/...` 修改为本项目实际的绝对路径。*
 
 重启 Claude Desktop 后，您就可以直接通过自然语言命令 Claude 去调用价格查询、新闻搜索和 PDF 提取了！
